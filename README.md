@@ -40,6 +40,17 @@ We provide:
 
 Your job is to build the actual training pipeline. This mirrors real ML work here: most of the effort should go into data handling, preprocessing, and evaluation judgment, not boilerplate.
 
+### Getting the repo
+
+You need [Git](https://git-scm.com/downloads). The repo is public, so no account or login is needed:
+
+```bash
+git clone https://gitlab.com/Yonder-Dynamics/take-home-projects/ai-ml-take-home.git
+cd ai-ml-take-home
+```
+
+Don't want to use Git? Download [a ZIP of the repo](https://gitlab.com/Yonder-Dynamics/take-home-projects/ai-ml-take-home/-/archive/main/ai-ml-take-home-main.zip), unzip it, and work in the `ai-ml-take-home-main` folder. A ZIP has no Git history, so the "Submitting" section below has one extra step for you.
+
 ### What's in the repo
 
 ```
@@ -159,6 +170,16 @@ We don't expect a perfect implementation. Those who show genuine effort and lear
 
    ```bash
    git remote set-url origin https://github.com/<your-username>/<your-repo>.git
+   git push -u origin main
+   ```
+
+   If you downloaded the ZIP instead of cloning, there is no `origin` yet. Start a repo and add yours:
+
+   ```bash
+   git init -b main
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin https://github.com/<your-username>/<your-repo>.git
    git push -u origin main
    ```
 
