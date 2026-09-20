@@ -60,6 +60,13 @@ AI_LOG.md          template for your AI usage log (Part 3)
 METHODOLOGY.md     template for how to run your code and your thought process (Part 4)
 ```
 
+### Files you shouldn't edit
+
+- `sampling/`. It's how we built the dataset, not part of your solution.
+- The downloaded dataset folder (`Sampled-YD-Object-Detection-1/`). Treat it as read-only. If you preprocess or relabel anything, write the result to a new folder, so anyone can delete the download, fetch it again, and still reproduce your results.
+
+Everything else is yours, including `requirements.txt`, which you should update as you add libraries.
+
 ### Getting the dataset
 
 1. Go to [the dataset's download page](https://universe.roboflow.com/malletbottle2/sampled-yd-object-detection/dataset/1/download) and click **Download Dataset**. Roboflow may ask you to sign in or create a free account.
