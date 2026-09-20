@@ -1,93 +1,168 @@
-# AI ML Take Home
+# AI/ML Take Home: ML/AI Track
 
+## Part 0: Base Knowledge Primer
 
+### Object detection
 
-## Getting started
+Our rover needs to autonomously identify specific objects in its environment, most notably a mallet it has to locate and retrieve as part of our competition tasks. This happens onboard, in real time, using a live camera feed, under real-world lighting and framing conditions that are messier than a clean training set.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Classification vs. detection
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- **Classification:** "is this image a mallet or not" — one label per image.
+- **Detection:** "where in this image is the mallet, if it's present at all" — a bounding box plus a label. This is the harder, more useful version, and what we actually run onboard.
 
-## Add your files
+You can approach this task as either, but detection is the closer match to our real use case and will be weighted accordingly if you attempt it (see rubric).
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### Preprocessing
+
+A common beginner mistake is assuming a bigger/fancier model fixes weak data. In practice, small, well-preprocessed datasets consistently outperform larger, messy ones for a narrow single-object task like this. Things worth considering: contrast/lighting normalization, background variety in your training set, augmentation (rotation, scale, brightness jitter) to compensate for a small dataset, and making sure your train/validation split doesn't leak near-duplicate frames (e.g., consecutive video frames of the same pose) between the two, which silently inflates your reported accuracy.
+
+### Precision, recall, and accuracy
+
+For a detection task like this, a model that simply never predicts "mallet" can still score deceptively well on naive accuracy if mallets are rare in your dataset. We care about **precision** (of the things you flagged as a mallet, how many actually were) and **recall** (of the actual mallets, how many did you catch). Report both, not just a single accuracy number.
+
+### How Yonder actually uses this
+
+Our object detection stack runs YOLO, migrated from a Jetson-based pipeline to run natively on an OrangePi's onboard NPU via RKNN, specifically to cut power draw and free up compute for navigation. Model size, inference speed, and real-world robustness (varying outdoor lighting, camera angle, partial occlusion) all matter as much as raw benchmark accuracy in our actual deployment. A model that scores well on a clean validation set but falls apart outdoors isn't useful to us.
+
+### Resources
+
+- [Ultralytics YOLO docs](https://docs.ultralytics.com/) (if using YOLO)
+- [PyTorch tutorials](https://pytorch.org/tutorials/) (if building a classifier from scratch)
+- [Roboflow](https://roboflow.com/) (useful for quick augmentation/preprocessing pipelines, optional)
+
+## Starter Repo / Dataset
+
+We provide:
+
+- A labeled dataset of 1,000 images of a mallet and a bottle in varying backgrounds, lighting, and angles, in a standard format (YOLO-style bounding box annotations). Every image contains at least one labeled object, so you can also treat it as classification if you'd rather do that.
+- A small held-out test set (not included in the training data) that we'll use to independently evaluate your final model. You won't have access to this set, so don't over-tune to your own validation split.
+
+Your job is to build the actual training pipeline. This mirrors real ML work here: most of the effort should go into data handling, preprocessing, and evaluation judgment, not boilerplate.
+
+### What's in the repo
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/Yonder-Dynamics/take-home-projects/ai-ml-take-home.git
-git branch -M main
-git push -uf origin main
+sampling/          the scripts we used to build the dataset (optional, see below)
+requirements.txt   Python dependencies (keep it up to date as you add libraries)
+AI_LOG.md          template for your AI usage log (Part 3)
+METHODOLOGY.md     template for how to run your code and your thought process (Part 4)
 ```
 
-## Integrate with your tools
+### Getting the dataset
 
-* [Set up project integrations](https://gitlab.com/Yonder-Dynamics/take-home-projects/ai-ml-take-home/-/settings/integrations)
+1. Go to [the dataset's download page](https://universe.roboflow.com/malletbottle2/sampled-yd-object-detection/dataset/1/download) and click **Download Dataset**. Roboflow may ask you to sign in or create a free account.
+2. Choose the format and select the option to get a **code snippet or ZIP file**. YOLOv8 matches the YOLO-style labels described above; pick another format if your framework needs it.
+3. Choose **Show download code**.
+4. Wait for Roboflow to finish preparing (zipping) the files, then copy the code it shows, paste it into a Python file or notebook (`.ipynb`) in your repo, and run it.
 
-## Collaborate with your team
+The snippet looks like this:
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```python
+from roboflow import Roboflow
 
-## Test and Deploy
+rf = Roboflow(api_key="YOUR_API_KEY")
+project = rf.workspace("malletbottle2").project("sampled-yd-object-detection")
+version = project.version(1)
+dataset = version.download("yolov8")
+```
 
-Use the built-in continuous integration in GitLab.
+In a notebook, Roboflow's version starts with `!pip install roboflow`. In a `.py` file, run `pip install roboflow` in your terminal instead.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+**Your API key is personal.** Roboflow puts it directly in the snippet. Don't commit it. Keep it in an environment variable or a git-ignored `.env` file, and remember your repo will be public.
 
-***
+Running it downloads the dataset into your repository, in a folder named `Sampled-YD-Object-Detection-1`. That folder is already in `.gitignore`, so the images won't be committed.
 
-# Editing this README
+### What you get
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+```
+Sampled-YD-Object-Detection-1/
+  data.yaml
+  train/images, train/labels     800 images
+  valid/images, valid/labels     200 images
+```
 
-## Suggestions for a good README
+- All images are 512x512.
+- There are two classes, listed in `data.yaml`: `bottle` (id 0) and `mallet` (id 1). Together the train and valid sets hold 702 bottle boxes and 537 mallet boxes. Report precision and recall for each class.
+- Each image has a label file with one line per object: `class x_center y_center width height`, with the four numbers normalized between 0 and 1.
+- There is no `test` folder (see the held-out set above). `data.yaml` still lists a `test` path, so remove that line if your framework complains.
+- Many images are augmented variants (rotation, brightness and exposure changes) of photos from our larger dataset.
+- License: CC BY 4.0 (also in `data.yaml`).
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### The `sampling/` folder
 
-## Name
-Choose a self-explaining name for your project.
+This is how we built the dataset from our larger Roboflow project. You don't need it. If you'd like to draw a different sample, `sampling/sample-roboflow.py` does that (set `ROBOFLOW_API_KEY` in a `.env` file first; see `.env.example`), and `sampling/upload-roboflow.py` uploads a sample to your own Roboflow project. Its dependencies are in `requirements.txt`, which covers only these scripts, not model training.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## Part 1: Core Task (required)
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+1. Build a training pipeline (PyTorch, YOLO, or framework of your choice) using the provided dataset.
+2. Implement at least one preprocessing/augmentation step beyond just resizing images, and briefly justify your choice(s) in your `METHODOLOGY.md` (e.g., why contrast normalization, why this augmentation set, given what you observed in the raw data).
+3. Train your model and report precision, recall, and a confusion matrix or equivalent breakdown.
+4. Submit your trained model weights (or a script to reproduce them) along with an inference script we can run against our held-out test set.
+5. In your `METHODOLOGY.md`, include a short error analysis: look at a handful of your model's mistakes (false positives/negatives) and describe what you think is causing them.
+6. Take a short video (your phone is fine) of a mallet-shaped object (or the closest household stand-in you have: a hammer, a rolling pin, whatever's on hand) in a real environment, and run your trained model against individual frames. Report how it performs outside the clean training distribution.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### What we're looking for
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+- Does the pipeline actually run end-to-end and produce a working model?
+- Is there a real preprocessing decision, not just default settings copy-pasted from a tutorial?
+- Do they report and understand precision/recall separately, not just accuracy?
+- Does the error analysis show genuine engagement with why the model fails where it fails, not just "accuracy was X%"?
+- A completed `METHODOLOGY.md` that lets us run your code and explains your approach.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## Part 2: Stretch Goals (optional)
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Pick any/all of these. Partial, well-reasoned attempts are valued over none.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- **Model efficiency:** Our real deployment target is an onboard NPU with real compute/power constraints, not a desktop GPU. Report your model's parameter count and estimated inference time, and briefly discuss what you'd trade off (accuracy vs. speed vs. size) if this had to run on constrained edge hardware. Attempting actual quantization or a smaller architecture variant is a bonus but not required.
+- **Active learning / hard example mining:** Identify the training images your model is least confident about or gets wrong, and describe (or implement) a strategy for how you'd prioritize collecting more data to fix those specific failure modes, rather than just collecting more data blindly.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Part 3: AI Usage Log (required)
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Submit a short `AI_LOG.md` with your code (there is a template in the repo root). For each significant use of AI tools, note:
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- What you asked
+- What you kept vs. rewrote, and why
+- Anything the AI got wrong that you had to catch
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Part 4: METHODOLOGY.md (required)
 
-## License
-For open source projects, say how it is licensed.
+Edit the `METHODOLOGY.md` in the repo root (there is a template) so it covers:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- **How to run your code.** The exact steps for a reviewer to install everything and run your data download, training, evaluation and inference from a fresh clone and see it working. For example: one script that installs all the libraries, and one that runs everything and shows the output. Say which Python version and OS you tested on, and give the exact command to run your inference script on a folder of test images.
+- **Your thought process, in bullet points.** Why you made the choices you did (data handling, preprocessing, model, evaluation), and what your results, error analysis and video test showed.
+
+We read this alongside your code. Write it in your own words: we'd rather see clear reasoning and honest limitations than a polished description.
+
+Keep your `requirements.txt` up to date. It must list every library your code needs, with versions pinned; the one in this repo only covers the sampling scripts. If your code downloads the dataset, read the Roboflow API key from an environment variable instead of writing it into the code, and name that variable in `METHODOLOGY.md` so we can set our own.
+
+## Rubric
+
+| Criterion | What we're scoring |
+| --- | --- |
+| Correctness | Pipeline runs end-to-end, produces a working, evaluable model |
+| Preprocessing judgment | Real, justified preprocessing/augmentation decisions, not just tutorial defaults |
+| Evaluation rigor | Reports precision/recall (not just accuracy), and the numbers are computed correctly against a proper held-out split |
+| Error analysis | Genuine engagement with why the model fails on specific examples, not just a final metric |
+| Handling ambiguity | How they resolved underspecified parts of the task: did they make a reasonable call and explain it? |
+| AI verification | Evidence they tested/verified AI-assisted code and claims rather than taking them on faith (from log + code quality) |
+| Stretch engagement (bonus, not required) | Attempted or completed any stretch goal |
+
+We don't expect a perfect implementation. Those who show genuine effort and learning are the ones who will have a leg up!
+
+---
+
+## Submitting
+
+1. **Create a public repository on your own GitHub account.**
+2. **Point your clone at it.** Your clone's `origin` is our repo, which you can't push to:
+
+   ```bash
+   git remote set-url origin https://github.com/<your-username>/<your-repo>.git
+   git push -u origin main
+   ```
+
+3. **Check that it's public.** Open your repo's link in a private/incognito browser window. If you can see the code without logging in, so can we.
+4. **Send us the link** in the Google Form you'll be asked to fill out.
+
+Your repo should include your code, your trained model weights (or a script that reproduces them), your inference script, an up-to-date `requirements.txt`, your completed `METHODOLOGY.md`, and your `AI_LOG.md`. Don't commit your Roboflow API key or the downloaded dataset folder. `.env` is already git-ignored.
