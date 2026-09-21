@@ -49,7 +49,7 @@ git clone https://gitlab.com/Yonder-Dynamics/take-home-projects/ai-ml-take-home.
 cd ai-ml-take-home
 ```
 
-Don't want to use Git? Download [a ZIP of the repo](https://gitlab.com/Yonder-Dynamics/take-home-projects/ai-ml-take-home/-/archive/main/ai-ml-take-home-main.zip), unzip it, and work in the `ai-ml-take-home-main` folder. A ZIP has no Git history, so the "Submitting" section below has one extra step for you.
+Don't want to use Git? Download [a ZIP of the repo](https://gitlab.com/Yonder-Dynamics/take-home-projects/ai-ml-take-home/-/archive/main/ai-ml-take-home-main.zip), unzip it, and work in the `ai-ml-take-home-main` folder. A ZIP has no Git history, so "Commit as you go" and "Submitting" below each have one extra step for you.
 
 ### What's in the repo
 
@@ -113,6 +113,57 @@ This is how we built the dataset from our larger Roboflow project. You don't nee
 5. In your `METHODOLOGY.md`, include a short error analysis: look at a handful of your model's mistakes (false positives/negatives) and describe what you think is causing them.
 6. Take a short video (your phone is fine) of a mallet-shaped object (or the closest household stand-in you have: a hammer, a rolling pin, whatever's on hand) in a real environment, and run your trained model against individual frames. Report how it performs outside the clean training distribution.
 
+### Suggested order of work
+
+Each step has a check that tells you it's right before you move on, and ends with a **commit** (see "Commit as you go" below). Stretch goals: one commit per goal, e.g. `stretch A: <name>`.
+
+| Step | What to do | How you know it's done | Commit message |
+| --- | --- | --- | --- |
+| 1 | Get the repo (if you used the ZIP, run the `git init` lines below first) and download the dataset with a script that reads your API key from an environment variable. Look at a couple of dozen images and their labels. | `Sampled-YD-Object-Detection-1/` exists and does **not** show up in `git status`. Your key is nowhere in your files. | `step 1: dataset download script` |
+| 2 | Explore the data: class balance, image sizes, lighting, where the objects sit in the frame. Note what you see in `METHODOLOGY.md`. | You can state three things about the raw data that will affect your choices. | `step 2: data exploration` |
+| 3 | A baseline pipeline with only resizing: train, then evaluate on `valid/`. | It runs end to end and gives you precision and recall numbers to beat. | `step 3: baseline pipeline` |
+| 4 | Add your preprocessing/augmentation step(s), retrain, and compare against the baseline. | Before/after numbers are written down, with why you chose it. | `step 4: preprocessing` |
+| 5 | Evaluation: precision, recall and a confusion matrix (or equivalent) computed against the held-out split. | You can say what each number means for a mallet vs a bottle. | `step 5: evaluation` |
+| 6 | Error analysis: look at a handful of false positives and false negatives and work out why. | Written in `METHODOLOGY.md` with specific examples. | `step 6: error analysis` |
+| 7 | Inference script that runs on a folder of images, plus your weights (or a script that reproduces them). | It works from a fresh clone with one command. | `step 7: inference script` |
+| 8 | Real-world test: your video, frames run through the model. | You can report how it does outside the clean training data. | `step 8: video test` |
+| 9 | Pin `requirements.txt`, finish `METHODOLOGY.md` and `AI_LOG.md`, and test everything in a clean checkout. | Someone else could follow `METHODOLOGY.md` without asking you anything. | `step 9: methodology and requirements` |
+
+### Commit as you go
+
+We read your commit history as well as your code. It shows how you worked, and it is the honest record behind your write-up. Commit at the end of each step in the table above, using the message shown (or your own words in the same spirit).
+
+One-time setup (git refuses to commit until it knows who you are). Use your own name and email:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+
+At the end of each step:
+
+```bash
+git status                  # what changed? nothing surprising?
+git add -A
+git commit -m "step 2: <what you did>"
+```
+
+**If you downloaded the ZIP instead of cloning,** there is no history yet. Once you have set your name and email (above), and before step 1, run these, so that everything you change afterwards shows up as your own work:
+
+```bash
+git init -b main
+git add -A
+git commit -m "starter files (from ZIP)"
+```
+
+Rules of the road:
+
+- **Small and honest beats tidy.** A history with `step 4: ...` followed by a `fix: ...` commit that repairs your own bug is exactly what we like to see. Fixing your own bug in a later commit is normal.
+- **Do not squash, amend or force-push** to make the history look cleaner. Do not commit everything in one go at the end.
+- **Commit your AI log as you go too.** When an AI tool gets something wrong, write the `AI_LOG.md` entry in the same commit as the fix.
+- **Never commit your Roboflow API key**, the dataset folder, or your `.env`. Look at `git status` before every `git add -A`. If a key does get committed, do not try to rewrite history: revoke that key in Roboflow and make a new one.
+- **Model weights:** GitHub rejects files over 100 MB. If your weights are large, commit the script that reproduces them instead.
+
 ### What we're looking for
 
 - Does the pipeline actually run end-to-end and produce a working model?
@@ -156,7 +207,7 @@ Keep your `requirements.txt` up to date. It must list every library your code ne
 | Evaluation rigor | Reports precision/recall (not just accuracy), and the numbers are computed correctly against a proper held-out split |
 | Error analysis | Genuine engagement with why the model fails on specific examples, not just a final metric |
 | Handling ambiguity | How they resolved underspecified parts of the task: did they make a reasonable call and explain it? |
-| AI verification | Evidence they tested/verified AI-assisted code and claims rather than taking them on faith (from log + code quality) |
+| AI verification | Evidence they tested/verified AI-assisted code and claims rather than taking them on faith (from log + code quality + commit history) |
 | Stretch engagement (bonus, not required) | Attempted or completed any stretch goal |
 
 We don't expect a perfect implementation. Those who show genuine effort and learning are the ones who will have a leg up!
@@ -173,12 +224,9 @@ We don't expect a perfect implementation. Those who show genuine effort and lear
    git push -u origin main
    ```
 
-   If you downloaded the ZIP instead of cloning, there is no `origin` yet. Start a repo and add yours:
+   If you downloaded the ZIP instead of cloning, there is no `origin` yet. You already ran `git init` (see "Commit as you go"), so just add yours:
 
    ```bash
-   git init -b main
-   git add .
-   git commit -m "Initial commit"
    git remote add origin https://github.com/<your-username>/<your-repo>.git
    git push -u origin main
    ```
@@ -186,4 +234,4 @@ We don't expect a perfect implementation. Those who show genuine effort and lear
 3. **Check that it's public.** Open your repo's link in a private/incognito browser window. If you can see the code without logging in, so can we.
 4. **Send us the link** in the Google Form you'll be asked to fill out.
 
-Your repo should include your code, your trained model weights (or a script that reproduces them), your inference script, an up-to-date `requirements.txt`, your completed `METHODOLOGY.md`, and your `AI_LOG.md`. Don't commit your Roboflow API key or the downloaded dataset folder. `.env` is already git-ignored.
+Your repo should include your code, your trained model weights (or a script that reproduces them), your inference script, an up-to-date `requirements.txt`, your completed `METHODOLOGY.md`, your `AI_LOG.md`, and your **full commit history** (push all of it; do not squash). Don't commit your Roboflow API key or the downloaded dataset folder. `.env` is already git-ignored.
