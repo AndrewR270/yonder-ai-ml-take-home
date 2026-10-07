@@ -4,7 +4,29 @@ Replace this template with your own. Keep it short: write what a teammate would 
 
 ## 1. How to run it
 
-A reviewer should be able to follow this from a fresh clone without asking you anything. Test it yourself in a clean checkout before you submit.
+Clone the repo:
+
+```bash
+git clone https://gitlab.com/Yonder-Dynamics/take-home-projects/ai-ml-take-home.git
+cd ai-ml-take-home
+```
+
+Install **Conda**: ([Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/))
+
+Create a conda environment:
+
+```bash
+conda create -n yonder python=3.12 -y
+conda activate yonder
+```
+
+Install dependencies: 
+
+```bash
+pip install -r requirements.txt
+```
+
+All my versions and packages such as  `ultralytics roboflow opencv-python matplotlib python-dotenv truststore` have already been saved to requirements.txt using `pip freeze > requirements.txt`. 
 
 ## 2. Thought process
 
