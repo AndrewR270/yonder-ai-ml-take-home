@@ -28,6 +28,8 @@ pip install -r requirements.txt
 
 All my versions and packages such as  `ultralytics roboflow opencv-python matplotlib python-dotenv truststore` have already been saved to requirements.txt using `pip freeze > requirements.txt`. 
 
+Download dataset?
+
 ## 2. Thought process
 
 Your approach and the reasoning behind it, in bullet points.
