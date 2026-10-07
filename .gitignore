@@ -5,3 +5,8 @@ data/
 /.venv
 /sampled
 Sampled-YD-Object-Detection-*/
+
+# YOLO Training Outputs & Intermediate Files
+runs/
+*.pt
+!models/best.pt
