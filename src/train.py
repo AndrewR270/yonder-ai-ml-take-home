@@ -32,10 +32,10 @@ def train_model(
     # Hyperparameters tune spatial and color variations for outdoor rovers.
     # These mimic field conditions for lighting and orientation changes.
     results = model.train(
-        data=data_cfg_path,    # Path to data.yaml
-        epochs=epochs,          # Total full iterations
-        imgsz=imgsz,            # Max dimensions = imgsz x imgsz
-        batch=batch,            # Number of images processed in parallel
+        data=data_cfg_path,  # Path to data.yaml
+        epochs=epochs,  # Total full iterations
+        imgsz=imgsz,  # Max dimensions = imgsz x imgsz
+        batch=batch,  # Number of images processed in parallel
         name="yonder_mallet_bottle_exp",  # Output directory under runs/detect/
         hsv_h=0.015,  # Shifts hue channels randomly within [-0.015, +0.015]
         hsv_s=0.7,  # Adjusts color intensity randomly within [-70%, +70%].
@@ -76,9 +76,7 @@ def main() -> None:
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent.parent
-    data_yaml = (
-        project_root / "Sampled-YD-Object-Detection-2" / "data.yaml"
-    )
+    data_yaml = project_root / "Sampled-YD-Object-Detection-2" / "data.yaml"
 
     # Guard clause: ensure data download script has executed prior to training
     if not data_yaml.exists():

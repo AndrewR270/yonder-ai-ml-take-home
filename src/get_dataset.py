@@ -1,4 +1,3 @@
-
 import os
 import truststore
 from dotenv import load_dotenv
