@@ -57,7 +57,9 @@ n_images = sum(
 workspace = Roboflow(api_key=api_key).workspace(workspace_name)
 try:
     project = workspace.project(project_name)
-except Exception as e:  # not printing the error itself: it can contain the API key # noqa: E501
+except (
+    Exception
+) as e:  # not printing the error itself: it can contain the API key # noqa: E501
     raise SystemExit(
         f"Couldn't open project '{workspace_name}/{project_name}' ({type(e).__name__}). "  # noqa: E501
         "Check ROBOFLOW_WORKSPACE, ROBOFLOW_PROJECT and PROJECT_API_KEY, and that the project exists."  # noqa: E501

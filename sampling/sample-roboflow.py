@@ -30,7 +30,9 @@ SPLITS = ("train", "valid", "test")
 
 # --- Download (skipped if DOWNLOAD_DIR already exists) ----------------------
 rf = Roboflow(api_key=os.environ.get("ROBOFLOW_API_KEY"))
-project = rf.workspace("malletbottle2").project("yonder-dynamics-object-detection")  # noqa: E501
+project = rf.workspace("malletbottle2").project(
+    "yonder-dynamics-object-detection"
+)  # noqa: E501
 version = project.version(2)
 dataset = version.download("yolov8", location=str(DOWNLOAD_DIR))
 
@@ -52,7 +54,9 @@ def load_records(root, rng):
                 if line.strip()
             }
             photo = label.stem.split(".rf.")[0]
-            by_photo.setdefault(photo, []).append((images[label.stem], label, ids))  # noqa: E501
+            by_photo.setdefault(photo, []).append(
+                (images[label.stem], label, ids)
+            )  # noqa: E501
     return [rng.choice(copies) for _, copies in sorted(by_photo.items())]
 
 
@@ -60,7 +64,9 @@ def pick(records, class_ids, rng):
     """IMAGES_PER_CLASS records per class; no image is picked twice."""
     picked, used = {}, set()
     for name in CLASSES:
-        pool = [r for r in records if class_ids[name] in r[2] and r[0] not in used]  # noqa: E501
+        pool = [
+            r for r in records if class_ids[name] in r[2] and r[0] not in used
+        ]  # noqa: E501
         if len(pool) < IMAGES_PER_CLASS:
             raise SystemExit(
                 f"Only {len(pool)} unused '{name}' images available, need {IMAGES_PER_CLASS}"  # noqa: E501
@@ -95,7 +101,9 @@ def write_dataset(picked, names):
         "nc": len(names),
         "names": names,
     }
-    (OUTPUT_DIR / "data.yaml").write_text(yaml.safe_dump(config, sort_keys=False))  # noqa: E501
+    (OUTPUT_DIR / "data.yaml").write_text(
+        yaml.safe_dump(config, sort_keys=False)
+    )  # noqa: E501
 
 
 def summarise(names):
@@ -108,7 +116,9 @@ def summarise(names):
             for line in label.read_text().splitlines()
             if line.strip()
         )
-        print(f"  {split}: {len(labels)} images, objects per class {dict(objects)}")  # noqa: E501
+        print(
+            f"  {split}: {len(labels)} images, objects per class {dict(objects)}"  # noqa: E501
+        )
 
 
 rng = random.Random(SEED)
