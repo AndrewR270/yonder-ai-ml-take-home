@@ -58,6 +58,21 @@ Run with `-h` or `--help` to see all options for the training script.
 
 By default, `epochs=40`, `imgsz=512`, and `batch=16`.
 
+
+### Video Frame Extraction (Optional)
+
+This is a helper script if you want to extract frames from a video:
+
+```bash
+python utils/extract_frames.py
+```
+
+Run with `-h` or `--help` to see all options for the training script.
+
+You must supply a path to a video.
+
+By default, `output=field_test_frames`, and `stride=10` (every 10th frame).
+
 ### Inference
 
 To run object detection on a folder of test images and generate YOLO label files, run **src/inference.py**:
@@ -66,6 +81,11 @@ To run object detection on a folder of test images and generate YOLO label files
 python src/inference.py --input /path/to/image/folder --output /path/to/output/folder
 ```
 
+Run with `-h` or `--help` to see all options for the inference script.
+
+You must supply paths to an input image folder and an output results folder.
+
+The only default is the autodirection for `--weights` to `best.pt`.
 
 ## 2. Thought process
 
@@ -123,3 +143,7 @@ Running the full PyTorch model would not be time and energy effieicnt. My resear
 ### 4) Training Time
 
 As I used my own CPU, training was slower and more inefficient, making repeated fine-tuning training sessions more costly. My CPU used 0 workers and required nearly 3.0 hours for 40 epochs. Leveraging CUDA GPU acceleration would drop training time down to minutes, enabling deeper training.
+
+### 5) Customizability
+
+Adding a CLI arg for training scripts to add custom names to output folders would allow us to name training result folders for objects other than mallets and bottles.
