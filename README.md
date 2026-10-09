@@ -1,3 +1,17 @@
+# Yonder AI/ML Take Home - Andrew Rafal
+
+This is my submission for the ML Team at Yonder Dynamics @ UCSD, a student organization focusing on constructing and operating a Mars rover. This includes Machine Learning capabilites for object detection and pathfiding.
+
+**This is a mallet and bottle detection** model using **training data from Roboflow** as well as the **YOLO v8 object detection framework.**
+
+### METHODOLOGY.md explains this code and how to run it.
+
+### AI_LOG.md describes how AI was used to develop the project.
+
+### TEST.md outlines a real test case and its failures in depth.
+
+Below is the initial prompt for what the ML model must do, what the repo must contain, and where to find training data and the YOLO model.
+
 # AI/ML Take Home: ML/AI Track
 
 ## Part 0: Base Knowledge Primer
