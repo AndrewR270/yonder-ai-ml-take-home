@@ -22,7 +22,6 @@ def parse_args():
     parser.add_argument(
         "--output",
         type=str,
-        required=True,
         default="inferences/last",
         help="Path to output directory to save prediction .txt files.",
     )

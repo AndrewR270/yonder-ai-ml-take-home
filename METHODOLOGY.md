@@ -78,12 +78,12 @@ By default, `output` resolves to `frames/last`, and `stride=10` (every 10th fram
 To run object detection on a folder of test images and generate YOLO label files, run **src/inference.py**:
 
 ```bash
-python src/inference.py --input /path/to/image/folder --output /path/to/output/folder
+python src/inference.py --input /path/to/image/folder
 ```
 
 Run with `-h` or `--help` to see all options for the inference script.
 
-You must supply paths to an input image folder and an output results folder.
+You must supply paths to an input image folder.
 
 By default, `output` resolves to `/inferences/last` and `weights` resolves to `weights/best.pt`.
 
