@@ -2,7 +2,7 @@
 
 This is a **detection** pipeline for mallets and bottles, using Roboflow datasets and YOLO v8 models for image analysis.
 
-My best.pt tensor was found after *40 epochs, 2.990 hours*, with a final **mAP50 of 0.9115**, which means that my final training results are close to being accurate 50% of the time. Specifically, **mallets** had a mAP50 of **0.967**, while **bottles** had a mAP50 of **0.856**.
+My best.pt tensor was found after *40 epochs, 2.990 hours*, with a final mean Average Precision **mAP50 of 0.9115**. This means 91.15%of the time, my ML model satisfies the IoU (Intersection over Union) threshold of 0.50 - the bounding boxes sufficiently overlap with the ground truth. Specifically, **mallets** had a mAP50 of **0.967**, while **bottles** had a mAP50 of **0.856**.
 
 This training took place on an Intel Core 5 120U (1.40 GHz) CPU with 10 Cores, with (roughly) *~37.6 Wh of power used*. Inference latency averaged **68.6 ms/image or ~14.5 FPS**.
 
@@ -64,7 +64,7 @@ By default, `epochs=40`, `imgsz=512`, and `batch=16`.
 This is a helper script if you want to extract frames from a video:
 
 ```bash
-python utils/extract_frames.py
+python utils/extract_frames.py --video /path/to/video
 ```
 
 Run with `-h` or `--help` to see all options for the training script.

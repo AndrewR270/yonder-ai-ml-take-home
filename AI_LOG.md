@@ -55,7 +55,7 @@ Checked Git & GitHub documentation to confirm.
 I asked for advice on whether to enable scale augmentationd (`scale=0.5`) and retrain the YOLOv8 model for 40 epochs on CPU vs. submitting the existing model (**0.9115 mAP50**) with scale documented as a future improvement.
 
 **What I kept vs. rewrote, and why:**
-I kept its recommendation to prioritize completion of required deliverables over re-training. I added scale augmentation to the limitations part of methodology.md in order to document that I had considered adding it.
+I kept its recommendation to prioritize completion of required deliverables over re-training. I added scale augmentation to the limitations part of METHODOLOGY.md in order to document that I had considered adding it.
 
 **What the AI got wrong that I had to catch:**
 When asking for what other fields I could add to the YOLO parameters, AI incorrectly assumed in that scale jittering had already been applied during training, while I knew I had not added it. I caught this by auditing the actual `model.train()` parameters (`hsv_h=0.015`, `hsv_s=0.7`, `hsv_v=0.4`, `degrees=15.0`, `fliplr=0.5`), where `scale` was omitted and thus defaulted to `0.0`.
