@@ -1,10 +1,18 @@
 # Methodology
 
-This is a **detection** pipeline for mallets and bottles, using Roboflow datasets and YOLO v8 models for image analysis.
+Here you will find how to:
+
+- Set up and run my ML scripts (install dependencies and operate the full workflow)
+- Information about the pipeline and my image augmentation decisions
+- Limiting areas in the current code and model.
+
+a **detection** pipeline for mallets and bottles, using Roboflow datasets and YOLO v8 models for image analysis.
 
 My best.pt tensor was found after *40 epochs, 2.990 hours*, with a final mean Average Precision **mAP50 of 0.9115**. This means 91.15%of the time, my ML model satisfies the IoU (Intersection over Union) threshold of 0.50 - the bounding boxes sufficiently overlap with the ground truth. Specifically, **mallets** had a mAP50 of **0.967**, while **bottles** had a mAP50 of **0.856**.
 
 This training took place on an Intel Core 5 120U (1.40 GHz) CPU with 10 Cores, with (roughly) *~37.6 Wh of power used*. Inference latency averaged **68.6 ms/image or ~14.5 FPS**.
+
+### Please reference **TEST.md** for deeper information on my physical testing results and failure analysis.
 
 ## 1. How to run it
 
@@ -64,14 +72,12 @@ By default, `epochs=40`, `imgsz=512`, and `batch=16`.
 This is a helper script if you want to extract frames from a video:
 
 ```bash
-python utils/extract_frames.py --video /path/to/video
+python utils/extract_frames.py --video /path/to/video --box /path/to/inference/box
 ```
 
-Run with `-h` or `--help` to see all options for the training script.
+Run with `-h` or `--help` to see all options for the visualization script.
 
-You must supply a path to a video.
-
-By default, `output` resolves to `frames/last`, and `stride=10` (every 10th frame).
+You must supply a path to an image or extracted frame and its inference .txt file There are no defaults.
 
 ### Inference
 
@@ -86,6 +92,14 @@ Run with `-h` or `--help` to see all options for the inference script.
 You must supply paths to an input image folder.
 
 By default, `output` resolves to `/inferences/last` and `weights` resolves to `weights/best.pt`.
+
+### Visualizing
+
+There is a visualization script supplied to see the inference boundings applied on a video frame or image. Use:
+
+```bash
+python utils/visualize.py --image path/to/image --
+```
 
 ## 2. Thought process
 
@@ -120,13 +134,17 @@ Beyond just image resizing, I included the following image augmentations on the 
 
 These are ranked in terms of which I consider to be most pressing.
 
-### 1) Lack of Scale Augmentation
+### 1) Training Bias: READ MORE AT TEST.md
+
+The lack of image diversity and equal split between mallets and models, fed into a training script with 40 epochs, narrowed detection to a high confidence level only on the training images, which were found not to accurately represent the conditions of real world testing. More training and more images are not better. Images which well represent the environment of operation are to be preferred, and testing must not increase faulty bias.
+
+### 2) Lack of Scale Augmentation
 
 I did not apply **scale** as an augmenting factor in the training script. This was due to an oversight on my part. Adding scale would allow the same image to be used to represent different distances across training epochs, reflecting how the rover would recognize an object at different distances.
 
 I refrained from retraining the tensors due to time constraints, but this is a high-priority addition, as it allows us as ML engineers to track confidence intervals and bounding boxes as our "camera" operates when the rover approaches the object.
 
-### 2) Disparities in Object Type Recognition
+### 3) Disparities in Object Type Recognition
 
 The difference between **mallet** and **bottle** recognition are notable, with *bottles having a 0.111 lower mAP50 score than mallets*. I suspect this is due to the much larger volume of mallets available in training, and an immediate solution to this might be to add more bottle images.
 
@@ -134,16 +152,16 @@ However, as the README notes, the size of the dataset does not mean it is better
 
 Additionally, as images were only 512x512, upscaling by providing a larger *imgsz* can also help to pick out finer details.
 
-### 3) NPU Efficiency
+### 4) NPU Efficiency
 
 On my CPU, inference latency was around 14.5 FPS and used 37.6Wh. This is slower than optimal for the rover, which would have less power to perform these computations and the FPS would only drop further. This was bottlenecked because I had no CUDA acceleration and only used x86 processor cores.
 
 Running the full PyTorch model would not be time and energy effieicnt. My research has said that quantizing the best weights to INT8/FP16 would help improve efficiency, with extensive improvement possible by converting to *.rknn* binary files, as OrangePi NPUs run with Rockchip processors compatible with Rockchip Neural Network.
 
-### 4) Training Time
+### 5) Training Time
 
 As I used my own CPU, training was slower and more inefficient, making repeated fine-tuning training sessions more costly. My CPU used 0 workers and required nearly 3.0 hours for 40 epochs. Leveraging CUDA GPU acceleration would drop training time down to minutes, enabling deeper training.
 
-### 5) Customizability
+### 6) Customizability
 
 Adding a CLI arg for training scripts to add custom names to output folders would allow us to name training result folders for objects other than mallets and bottles.
