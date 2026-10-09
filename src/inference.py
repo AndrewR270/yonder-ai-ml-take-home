@@ -23,12 +23,13 @@ def parse_args():
         "--output",
         type=str,
         required=True,
+        default="inferences/last",
         help="Path to output directory to save prediction .txt files.",
     )
     parser.add_argument(
         "--weights",
         type=str,
-        default="runs/detect/yonder_dynamics/weights/best.pt",
+        default="weights/best.pt",
         help="Path to trained model weights (.pt).",
     )
     return parser.parse_args()
@@ -95,6 +96,6 @@ if __name__ == "__main__":
     weights = (
         args.weights
         if os.path.exists(args.weights)
-        else "runs/detect/yonder_dynamics/weights/best.pt"
+        else "weights/best.pt"
     )
     run_inference(args.input, args.output, weights)

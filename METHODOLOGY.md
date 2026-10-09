@@ -71,7 +71,7 @@ Run with `-h` or `--help` to see all options for the training script.
 
 You must supply a path to a video.
 
-By default, `output=field_test_frames`, and `stride=10` (every 10th frame).
+By default, `output` resolves to `frames/last`, and `stride=10` (every 10th frame).
 
 ### Inference
 
@@ -85,7 +85,7 @@ Run with `-h` or `--help` to see all options for the inference script.
 
 You must supply paths to an input image folder and an output results folder.
 
-The only default is the autodirection for `--weights` to `best.pt`.
+By default, `output` resolves to `/inferences/last` and `weights` resolves to `weights/best.pt`.
 
 ## 2. Thought process
 

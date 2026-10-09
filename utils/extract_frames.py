@@ -33,7 +33,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output",
         type=str,
-        default="field_test_frames",
+        default="frames/last",
         help="Output folder.",
     )
     parser.add_argument(
