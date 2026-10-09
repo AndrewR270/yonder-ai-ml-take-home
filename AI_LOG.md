@@ -23,7 +23,7 @@ Below are some standout particular disagreements.
 I've always liked the idea of a clean repo and so I applied Flake and Black to this repo and made Github enforce it in a `lint.yml`. However that enforces line length and one of the lines, a formatted output string (`f"{cls_id} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f} {conf:.6f}"`) in `inference.py` could not be reduced, and I found this issue with other lines too. I asked how to resolve it.
 
 **What I kept vs. rewrote, and why:**
-It suggested that I use a multi-line string wrapping approach (`line = (f"..." f"...")`), but I decided to go with its secondary suggestion of adding inline `# noqa: E501` comments for Flake to stop flagging them.
+It suggested that I use a multi-line string wrapping approach (`line = (f"..." f"...")`), but I decided to go with its secondary suggestion of adding inline `# noqa: E501` comments for Flake to stop flagging them. This was later done for other lines.
 
 **What the AI got wrong that I had to catch:**
 The suggestion to include multi-line string wrapping was my initial preferred method, but when Black is triggered via Ctrl+S, it undoes these changes as they are not standard practice, so while it worked for Flake, it did not for Black.

@@ -92,9 +92,5 @@ def run_inference(input_dir: str, output_dir: str, weights_path: str):
 if __name__ == "__main__":
     args = parse_args()
     # Adjust weights path if your saved weights folder uses a specific run name
-    weights = (
-        args.weights
-        if os.path.exists(args.weights)
-        else "weights/best.pt"
-    )
+    weights = args.weights if os.path.exists(args.weights) else "weights/best.pt"  # noqa: E501
     run_inference(args.input, args.output, weights)
